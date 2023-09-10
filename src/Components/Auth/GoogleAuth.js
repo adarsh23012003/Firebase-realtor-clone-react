@@ -4,8 +4,10 @@ import { toast } from "react-toastify";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { db } from "../../Firebase/Firebase";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router";
 
 function GoogleAuth() {
+  const navigate = useNavigate();
   async function signInWithGoogle() {
     try {
       const auth = getAuth();
@@ -22,6 +24,7 @@ function GoogleAuth() {
           //   photoUrl: user.photoURL,
           timestamp: serverTimestamp(),
         });
+        navigate("/");
         toast.success("Account created successfully");
       } else {
         // doc.data() will be undefined in this case

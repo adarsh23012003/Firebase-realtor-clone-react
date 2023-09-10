@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import {
   getAuth,
@@ -18,6 +18,7 @@ function SignUp() {
     email: "",
     password: "",
   });
+  const navigate = useNavigate();
 
   async function createUser() {
     try {
@@ -36,6 +37,9 @@ function SignUp() {
       formDataCopy.timestamp = serverTimestamp();
       await setDoc(doc(db, "users", user.uid), formDataCopy);
       toast.success("Account created successfully");
+      if (user) {
+        navigate("/");
+      }
     } catch (e) {
       console.log(e);
       toast.error("Something went wrong with registration");
@@ -144,19 +148,13 @@ function SignUp() {
                 <div className='text-center'>
                   <button
                     onClick={(e) => {
-                      if (
-                        !formData.name.length === 0 ||
-                        !formData.email.length === 0 ||
-                        !formData.password.length === 0
-                      ) {
-                        e.preventDefault();
-                        createUser();
-                        setFormData({
-                          name: "",
-                          email: "",
-                          password: "",
-                        });
-                      }
+                      e.preventDefault();
+                      createUser();
+                      setFormData({
+                        name: "",
+                        email: "",
+                        password: "",
+                      });
                     }}
                     className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
                   >
