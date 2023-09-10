@@ -38,7 +38,7 @@ function ForgotPassword() {
                   <div>
                     <h1>
                       Don't have an account?
-                      <Link to='/sign-in'>
+                      <Link to='/sign-up'>
                         <span className='text-red-600 hover:text-red-700 cursor-pointer'>
                           Register
                         </span>
