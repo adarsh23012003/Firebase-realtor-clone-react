@@ -1,10 +1,36 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import GoogleAuth from "../../Components/Auth/GoogleAuth";
+import { toast } from "react-toastify";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    email: "",
+    password: "",
+  });
+  const navigate = useNavigate();
+  async function signInUser() {
+    try {
+      const auth = getAuth();
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      const user = userCredential.user;
+      if (user) {
+        navigate("/");
+        toast.success("Logged in successfully");
+      }
+      // console.log(user);
+    } catch (e) {
+      toast.error("Bad user credentials");
+      // console.log(e);
+    }
+  }
 
   return (
     <>
@@ -27,20 +53,28 @@ function SignIn() {
                   {/* email */}
                   <input
                     required
+                    value={formData.email}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type='text'
                     placeholder='Email address'
                     name='Email'
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                    }}
                   />
                 </div>
                 <div className='my-5 rounded-sm relative'>
                   {/* password */}
                   <input
                     required
+                    value={formData.password}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type={showPassword ? "text" : "password"}
                     placeholder='Password'
                     name='password'
+                    onChange={(e) => {
+                      setFormData({ ...formData, password: e.target.value });
+                    }}
                   />
                   {showPassword ? (
                     <AiFillEyeInvisible
@@ -81,7 +115,17 @@ function SignIn() {
                   </div>
                 </div>
                 <div className='text-center'>
-                  <button className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      signInUser();
+                      setFormData({
+                        email: "",
+                        password: "",
+                      });
+                    }}
+                    className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
+                  >
                     Sign In
                   </button>
                 </div>
