@@ -14,7 +14,10 @@ function SignUp() {
         <div className='sm:flex px-2 sm:px-5 lg:px-52 gap-0 sm:gap-16 justify-center items-center'>
           <div className='max-w-sm sm:max-w-full sm:w-[50%] mb-5 sm:mb-0'>
             <div className='flex justify-center items-center animate-pulse'>
-              <img src={require("../../assets/sign-up.webp")} alt='Login' />
+              <img
+                src={require("../../assets/create-account.png")}
+                alt='Login'
+              />
             </div>
           </div>
           <div className='max-w-sm sm:max-w-full sm:w-[50%] text-center'>
