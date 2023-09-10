@@ -9,6 +9,7 @@ import {
 } from "firebase/auth";
 import { db } from "../../Firebase/Firebase";
 import { serverTimestamp, setDoc, doc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 function SignUp() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -34,8 +35,10 @@ function SignUp() {
       delete formDataCopy.password;
       formDataCopy.timestamp = serverTimestamp();
       await setDoc(doc(db, "users", user.uid), formDataCopy);
+      toast.success("Account created successfully");
     } catch (e) {
       console.log(e);
+      toast.error("Something went wrong with registration");
     }
   }
 
@@ -58,7 +61,7 @@ function SignUp() {
           </div>
           <div className='max-w-sm sm:max-w-full sm:w-[50%] text-center'>
             <div className='px-2 md:px-5 sm:px-5 lg:px-10'>
-              <form action=''>
+              <form>
                 <div className='my-5 rounded-sm'>
                   {/* name */}
                   <input
@@ -141,14 +144,19 @@ function SignUp() {
                 <div className='text-center'>
                   <button
                     onClick={(e) => {
-                      e.preventDefault();
-                      createUser();
-                      console.log(formData);
-                      setFormData({
-                        name: "",
-                        email: "",
-                        password: "",
-                      });
+                      if (
+                        !formData.name.length === 0 ||
+                        !formData.email.length === 0 ||
+                        !formData.password.length === 0
+                      ) {
+                        e.preventDefault();
+                        createUser();
+                        setFormData({
+                          name: "",
+                          email: "",
+                          password: "",
+                        });
+                      }
                     }}
                     className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
                   >
