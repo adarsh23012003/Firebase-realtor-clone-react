@@ -1,7 +1,7 @@
 import React from "react";
-import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import GoogleAuth from "../../Components/Auth/GoogleAuth";
 
 function SignIn() {
   const [showPassword, setShowPassword] = React.useState(false);
@@ -92,12 +92,7 @@ function SignIn() {
                 <div className='w-[45%] border sm:border-[1.5px]'></div>
               </div>
               <div className='mb-8'>
-                <button className='flex gap-2 justify-center items-center text-center uppercase w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-6 rounded-sm'>
-                  <div className='bg-white rounded-full p-0.5'>
-                    <FcGoogle size={25} />
-                  </div>
-                  <h1>Continue With Google</h1>
-                </button>
+                <GoogleAuth />
               </div>
             </div>
           </div>
