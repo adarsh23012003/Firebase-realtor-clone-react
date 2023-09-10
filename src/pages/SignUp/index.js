@@ -1,8 +1,11 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 function SignUp() {
+  const [showPassword, setShowPassword] = React.useState(false);
+
   return (
     <>
       <div>
@@ -43,15 +46,32 @@ function SignUp() {
                     name='Email'
                   />
                 </div>
-                <div className='my-5 rounded-sm'>
+                <div className='my-5 rounded-sm relative'>
                   {/* password */}
                   <input
                     required
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
-                    type='password'
+                    type={showPassword ? "text" : "password"}
                     placeholder='Password'
                     name='password'
                   />
+                  {showPassword ? (
+                    <AiFillEyeInvisible
+                      size={20}
+                      className='cursor-pointer text-black/70 hover:text-black/90 absolute left-[90%] sm:left-[92%] top-[30%]'
+                      onClick={() => {
+                        setShowPassword(false);
+                      }}
+                    />
+                  ) : (
+                    <AiFillEye
+                      size={20}
+                      className='cursor-pointer text-black/70 hover:text-black/90 absolute left-[90%] sm:left-[92%] top-[30%]'
+                      onClick={() => {
+                        setShowPassword(true);
+                      }}
+                    />
+                  )}
                 </div>
                 {/* Content */}
                 <div className='my-5 rounded-sm flex justify-between text-xs sm:text-sm'>
