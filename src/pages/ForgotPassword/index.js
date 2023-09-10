@@ -1,8 +1,24 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import GoogleAuth from "../../Components/Auth/GoogleAuth";
+import { toast } from "react-toastify";
+import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 
 function ForgotPassword() {
+  const [email, setEmail] = React.useState("");
+  const navigate = useNavigate();
+
+  async function resetPassword() {
+    try {
+      const auth = getAuth();
+      await sendPasswordResetEmail(auth, email);
+      toast.success("Password reset email sent");
+      navigate("/sign-in");
+    } catch (e) {
+      toast.error("could not send reset email");
+      // console.log(e);
+    }
+  }
   return (
     <>
       <div>
@@ -27,10 +43,14 @@ function ForgotPassword() {
                   {/* email */}
                   <input
                     required
+                    value={email}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type='text'
                     placeholder='Email address'
                     name='Email'
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                    }}
                   />
                 </div>
                 {/* Content */}
@@ -54,7 +74,14 @@ function ForgotPassword() {
                   </div>
                 </div>
                 <div className='text-center'>
-                  <button className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setEmail("");
+                      resetPassword();
+                    }}
+                    className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
+                  >
                     send reset email
                   </button>
                 </div>
