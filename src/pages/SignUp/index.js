@@ -24,7 +24,7 @@ function SignUp() {
             </div>
           </div>
           <div className='max-w-sm sm:max-w-full sm:w-[50%] text-center'>
-            <div className='px-6 sm:px-10 md:px-10 lg:px-20'>
+            <div className='px-2 md:px-5 sm:px-5 lg:px-10'>
               <form action=''>
                 <div className='my-5 rounded-sm'>
                   {/* name */}
@@ -74,7 +74,7 @@ function SignUp() {
                   )}
                 </div>
                 {/* Content */}
-                <div className='my-5 rounded-sm flex justify-between text-xs sm:text-sm'>
+                <div className='my-5 rounded-sm flex justify-between text-[13px] sm:text-[17px]'>
                   <div>
                     <h1>
                       Have an account?
