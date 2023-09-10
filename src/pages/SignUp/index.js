@@ -2,9 +2,42 @@ import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { db } from "../../Firebase/Firebase";
+import { serverTimestamp, setDoc, doc } from "firebase/firestore";
 
 function SignUp() {
   const [showPassword, setShowPassword] = React.useState(false);
+  const [formData, setFormData] = React.useState({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  async function createUser() {
+    try {
+      const auth = getAuth();
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+      updateProfile(auth.currentUser, {
+        displayName: formData.name,
+      });
+      const user = userCredential.user;
+      const formDataCopy = { ...formData };
+      delete formDataCopy.password;
+      formDataCopy.timestamp = serverTimestamp();
+      await setDoc(doc(db, "users", user.uid), formDataCopy);
+    } catch (e) {
+      console.log(e);
+    }
+  }
 
   return (
     <>
@@ -30,30 +63,42 @@ function SignUp() {
                   {/* name */}
                   <input
                     required
+                    value={formData.name}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type='text'
                     placeholder='Full name'
                     name='Name'
+                    onChange={(e) => {
+                      setFormData({ ...formData, name: e.target.value });
+                    }}
                   />
                 </div>
                 <div className='my-5 rounded-sm'>
                   {/* email */}
                   <input
                     required
+                    value={formData.email}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type='text'
                     placeholder='Email address'
                     name='Email'
+                    onChange={(e) => {
+                      setFormData({ ...formData, email: e.target.value });
+                    }}
                   />
                 </div>
                 <div className='my-5 rounded-sm relative'>
                   {/* password */}
                   <input
                     required
+                    value={formData.password}
                     className='w-full focus:outline-none border-2 focus:border-blue-500 rounded-sm text-lg p-2.5'
                     type={showPassword ? "text" : "password"}
                     placeholder='Password'
                     name='password'
+                    onChange={(e) => {
+                      setFormData({ ...formData, password: e.target.value });
+                    }}
                   />
                   {showPassword ? (
                     <AiFillEyeInvisible
@@ -94,7 +139,19 @@ function SignUp() {
                   </div>
                 </div>
                 <div className='text-center'>
-                  <button className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      createUser();
+                      console.log(formData);
+                      setFormData({
+                        name: "",
+                        email: "",
+                        password: "",
+                      });
+                    }}
+                    className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
+                  >
                     Sign Up
                   </button>
                 </div>
