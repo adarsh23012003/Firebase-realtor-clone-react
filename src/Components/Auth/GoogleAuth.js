@@ -27,9 +27,17 @@ function GoogleAuth() {
         navigate("/");
         toast.success("Account created successfully");
       } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
+        navigate("/");
+        toast.success("Logged in successfully");
       }
+      //   if (user) {
+      // navigate("/");
+      // toast.success("Logged in successfully");
+      // }
+      //  else {
+      // doc.data() will be undefined in this case
+      // console.log("No such document!");
+      // }
       //   console.log(user);
     } catch (e) {
       toast.error("Something went wrong");
