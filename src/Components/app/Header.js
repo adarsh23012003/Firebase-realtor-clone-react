@@ -1,14 +1,27 @@
-import React from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 
 function Header() {
+  const auth = getAuth();
+  const [isSigIn, setIsSigIn] = React.useState(false);
   const location = useLocation();
   function pathMatchRoute(params) {
     if (params === location.pathname) {
       return true;
     }
   }
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsSigIn(true);
+      } else {
+        setIsSigIn(false);
+      }
+    });
+  }, [auth]);
 
   return (
     <>
@@ -45,9 +58,14 @@ function Header() {
                 className={`font-semibold text-gray-400 hover:text-black py-1.5 ${
                   pathMatchRoute("/sign-in") &&
                   "text-black border-b-[3px] border-[#D92228]"
+                } ${
+                  pathMatchRoute("/profile") &&
+                  "text-black border-b-[3px] border-[#D92228]"
                 }`}
               >
-                <Link to='/sign-in'>SignIn</Link>
+                <Link to={isSigIn ? "/profile" : "/sign-in"}>
+                  {isSigIn ? "Profile" : "SignIn"}
+                </Link>
               </li>
             </ul>
           </div>
