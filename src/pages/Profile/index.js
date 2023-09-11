@@ -5,6 +5,8 @@ import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { db } from "../../Firebase/Firebase";
+import { Link } from "react-router-dom";
+import { FcHome } from "react-icons/fc";
 
 function Profile() {
   const auth = getAuth();
@@ -40,7 +42,7 @@ function Profile() {
       {/* popup box */}
       <div>
         {isOpen && (
-          <div className='bg-black/70 fixed z-30 bg-opacity-10 flex h-screen justify-center items-center'>
+          <div className='bg-black/70 fixed z-30 bg-opacity-10 flex h-screen w-full justify-center items-center'>
             <div className='bg-white max-w-sm md:w-1/3 sm:w-1/2 mx-2 sm:mx-0 rounded-sm p-5'>
               <div className='py-3'>
                 <input
@@ -117,6 +119,28 @@ function Profile() {
           className='text-blue-500 cursor-pointer font-semibold'
         >
           Sign out
+        </div>
+      </div>
+      {/*   Sell or rent your home button */}
+      <div className='flex justify-center py-3'>
+        <div className='mx-3 w-72 sm:w-1/3 lg:w-1/5'>
+          <button
+            className='bg-blue-500 font-medium text-white w-full rounded-sm p-2'
+            onClick={() => {
+              navigate("/create-listing");
+            }}
+          >
+            <Link
+              to='/create-listing'
+              className='flex justify-center items-center gap-1 uppercase'
+            >
+              <FcHome
+                size={25}
+                className=' bg-red-300 rounded-full p-0.5 border-2'
+              />
+              Sell or rent your home
+            </Link>
+          </button>
         </div>
       </div>
     </>
