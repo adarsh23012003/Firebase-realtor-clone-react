@@ -39,6 +39,7 @@ function CreateListing() {
     setLoading(true);
     // Image uploading function
     async function storeImage(oneImage) {
+      setLoading(true);
       return new Promise((resolve, reject) => {
         const storage = getStorage();
         const filename = `${auth.currentUser.uid}-${oneImage.name}-${uuidv4()}`;
@@ -116,6 +117,7 @@ function CreateListing() {
       imgUrls,
       geoLocation,
       timestamp: serverTimestamp(),
+      userRef: auth.currentUser.uid,
     };
     delete formDataCopy.images;
     !formDataCopy.discountedPrice && delete formDataCopy.discountedPrice;
