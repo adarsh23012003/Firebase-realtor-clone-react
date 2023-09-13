@@ -185,7 +185,7 @@ function Profile() {
             </h1>
           </div>
         )}
-        <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3'>
+        <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 mb-10'>
           {listingData.map((listing) => {
             return (
               <ListingItem
