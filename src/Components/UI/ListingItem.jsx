@@ -1,21 +1,9 @@
-import { deleteDoc, doc } from "firebase/firestore";
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import Moment from "react-moment";
-import { Link, useNavigate } from "react-router-dom";
-import { db } from "../../Firebase/Firebase";
-import { toast } from "react-toastify";
-
-function ListingItem({ listing, id }) {
-  const navigate = useNavigate();
-  async function deleteListing(listingId) {
-    if (window.confirm("Are you sure you want to delete?")) {
-      await deleteDoc(doc(db, "listings", listingId));
-      toast.success("Listing deleted successfully");
-      window.location.reload();
-    }
-  }
+import { Link } from "react-router-dom";
+function ListingItem({ listing, id, oneDelete, oneEdit }) {
   return (
     <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
       <div className='relative overflow-hidden rounded-t-md'>
@@ -61,22 +49,19 @@ function ListingItem({ listing, id }) {
             </div>
           </div>
           <div className='flex gap-1.5'>
-            <div className='cursor-pointer'>
-              <MdModeEdit
-                onClick={() => {
-                  navigate(`/edit-listing/${id}`);
-                }}
-                className='fill-black'
-              />
-            </div>
-            <div className='cursor-pointer'>
-              <MdDelete
-                onClick={() => {
-                  deleteListing(id);
-                }}
-                className='fill-red-500'
-              />
-            </div>
+            {oneEdit && (
+              <div className='cursor-pointer'>
+                <MdModeEdit onClick={() => oneEdit()} className='fill-black' />
+              </div>
+            )}
+            {oneDelete && (
+              <div className='cursor-pointer'>
+                <MdDelete
+                  onClick={() => oneDelete()}
+                  className='fill-red-500'
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>

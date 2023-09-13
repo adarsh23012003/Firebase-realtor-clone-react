@@ -1,5 +1,11 @@
 import { getAuth, updateProfile } from "firebase/auth";
-import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import React, { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router";
@@ -69,6 +75,16 @@ function Profile() {
     getUserListingData();
   }, [auth.currentUser.uid]);
 
+  async function deleteListing(listingId) {
+    if (window.confirm("Are you sure you want to delete?")) {
+      await deleteDoc(doc(db, "listings", listingId));
+      toast.success("Listing deleted successfully");
+      window.location.reload();
+    }
+  }
+  function oneEdit(listingId) {
+    navigate(`/edit-listing/${listingId}`);
+  }
   return (
     <>
       {/* popup box */}
@@ -192,6 +208,8 @@ function Profile() {
                 key={listing.id}
                 id={listing.id}
                 listing={listing.data}
+                oneDelete={() => deleteListing(listing.id)}
+                oneEdit={() => oneEdit(listing.id)}
               />
             );
           })}
