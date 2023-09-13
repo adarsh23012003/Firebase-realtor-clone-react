@@ -1,12 +1,14 @@
 import { getAuth, updateProfile } from "firebase/auth";
-import { doc, updateDoc } from "firebase/firestore";
-import React from "react";
+import { collection, doc, getDocs, updateDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { CgProfile } from "react-icons/cg";
 import { useNavigate } from "react-router";
 import { toast } from "react-toastify";
 import { db } from "../../Firebase/Firebase";
 import { Link } from "react-router-dom";
 import { FcHome } from "react-icons/fc";
+import LoadingIcon from "../../Components/UI/LoadingIcon";
+import ListingItem from "../../Components/UI/ListingItem";
 
 function Profile() {
   const auth = getAuth();
@@ -16,6 +18,8 @@ function Profile() {
     email: "",
   });
   const [isOpen, setIsOpen] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [listingData, setListingData] = useState([]);
 
   async function changeDetail() {
     try {
@@ -36,6 +40,34 @@ function Profile() {
       console.log(e);
     }
   }
+
+  useEffect(() => {
+    setLoading(true);
+    async function getUserListingData() {
+      try {
+        if (auth.currentUser.uid) {
+          if (collection) {
+            const querySnapshot = await getDocs(collection(db, "listings"));
+            const listings = [];
+            querySnapshot.forEach((doc) => {
+              if (doc.data().userRef === auth.currentUser.uid) {
+                return listings.push({
+                  id: doc.id,
+                  data: doc.data(),
+                });
+              }
+            });
+            setListingData(listings);
+            setLoading(false);
+          }
+        }
+      } catch (e) {
+        setLoading(false);
+        console.log(e);
+      }
+    }
+    getUserListingData();
+  }, [auth.currentUser.uid]);
 
   return (
     <>
@@ -142,6 +174,28 @@ function Profile() {
             </Link>
           </button>
         </div>
+      </div>
+      {/* Loading */}
+      <div>{loading && <LoadingIcon />}</div>
+      <div className='px-2 sm:px-5 lg:px-52'>
+        {!loading && listingData.length > 0 && (
+          <div>
+            <h1 className='text-center font-semibold text-3xl sm:text-4xl my-5 sm:my-8'>
+              My listing
+            </h1>
+          </div>
+        )}
+        <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3'>
+          {listingData.map((listing) => {
+            return (
+              <ListingItem
+                key={listing.id}
+                id={listing.id}
+                listing={listing.data}
+              />
+            );
+          })}
+        </ul>
       </div>
     </>
   );
