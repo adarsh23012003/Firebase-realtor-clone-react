@@ -1,10 +1,21 @@
+import { deleteDoc, doc } from "firebase/firestore";
 import React from "react";
 import { FaLocationDot } from "react-icons/fa6";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import Moment from "react-moment";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { db } from "../../Firebase/Firebase";
+import { toast } from "react-toastify";
 
 function ListingItem({ listing, id }) {
+  const navigate = useNavigate();
+  async function deleteListing(listingId) {
+    if (window.confirm("Are you sure you want to delete?")) {
+      await deleteDoc(doc(db, "listings", listingId));
+      toast.success("Listing deleted successfully");
+      window.location.reload();
+    }
+  }
   return (
     <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
       <div className='relative overflow-hidden rounded-t-md'>
@@ -52,13 +63,17 @@ function ListingItem({ listing, id }) {
           <div className='flex gap-1.5'>
             <div className='cursor-pointer'>
               <MdModeEdit
-                onClick={() => alert("Edit")}
+                onClick={() => {
+                  navigate(`/edit-listing/${id}`);
+                }}
                 className='fill-black'
               />
             </div>
             <div className='cursor-pointer'>
               <MdDelete
-                onClick={() => alert("Delete")}
+                onClick={() => {
+                  deleteListing(id);
+                }}
                 className='fill-red-500'
               />
             </div>
