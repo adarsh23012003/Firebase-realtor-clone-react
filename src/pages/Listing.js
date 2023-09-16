@@ -35,7 +35,6 @@ export default function Listing() {
     }
     getUserListingData();
   }, [param.listingId]);
-  console.log(listingData.geoLocation);
 
   return (
     <>
