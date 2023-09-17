@@ -112,7 +112,7 @@ function Home() {
                       {element?.data?.regularPrice
                         .toString()
                         .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                      {element?.data?.type == "rent" && " / month"}
+                      {element?.data?.type === "rent" && " / month"}
                     </p>
                   )}
                 </SwiperSlide>
