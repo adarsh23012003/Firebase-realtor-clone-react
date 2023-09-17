@@ -7,7 +7,8 @@ import "swiper/css/navigation";
 import { Pagination, Navigation } from "swiper/modules";
 import { FaShare } from "react-icons/fa";
 
-function Carousel({ data }) {
+function Carousel({ data, share = true }) {
+  const [isShare, setIsShare] = useState(share);
   const [clipboardMassage, setClipboardMassage] = useState(false);
 
   return (
@@ -36,18 +37,20 @@ function Carousel({ data }) {
               </SwiperSlide>
             );
           })}
-          <div
-            className='fixed z-10 top-[8%] sm:top-[13%] right-[5%] sm:right-[3%] p-2.5 sm:p-3.5 rounded-full cursor-pointer bg-white border-2 border-gray-400 w-10 sm:w-12 h-10 sm:h-12'
-            onClick={() => {
-              navigator.clipboard.writeText(window.location.href);
-              setClipboardMassage(true);
-              setTimeout(() => {
-                setClipboardMassage(false);
-              }, 2000);
-            }}
-          >
-            <FaShare className='fill-black/50 text-[16px] sm:text-lg' />
-          </div>
+          {isShare && (
+            <div
+              className='fixed z-10 top-[8%] sm:top-[13%] right-[5%] sm:right-[3%] p-2.5 sm:p-3.5 rounded-full cursor-pointer bg-white border-2 border-gray-400 w-10 sm:w-12 h-10 sm:h-12'
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href);
+                setClipboardMassage(true);
+                setTimeout(() => {
+                  setClipboardMassage(false);
+                }, 2000);
+              }}
+            >
+              <FaShare className='fill-black/50 text-[16px] sm:text-lg' />
+            </div>
+          )}
           <div
             className={
               clipboardMassage &&
