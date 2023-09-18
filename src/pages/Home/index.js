@@ -50,11 +50,13 @@ function Home() {
           if (rentListing.length !== 4) {
             rentListing.push({ id: doc.id, data: doc.data() });
           }
-        } else if (doc.data().type === "sell") {
+        }
+        if (doc.data().type === "sell") {
           if (forSaleListing.length !== 4) {
             forSaleListing.push({ id: doc.id, data: doc.data() });
           }
-        } else if (doc.data()?.offer === true) {
+        }
+        if (doc.data()?.offer) {
           if (offerListing.length !== 4) {
             offerListing.push({ id: doc.id, data: doc.data() });
           }
