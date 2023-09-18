@@ -71,16 +71,21 @@ export default function Listing() {
               </div>
               {/* type */}
               <div className='my-2'>
-                <button className='font-semibold bg-red-700 text-white rounded-md py-0.5 px-16 sm:px-20'>
-                  {listingData.type === "rent" ? "For Rent" : "For Sale"}
-                </button>
-                {/* <button>
-                {listingData?.offer&&(
-                  <p>
-                  ${listingData.regularPrice- +listingData.discountedPrice} discount
-                  </p>
-                )}
-              </button> */}
+                <div className='flex flex-wrap gap-2 sm:gap-5'>
+                  <button className='font-semibold bg-red-700 text-white rounded-md py-0.5 w-fit px-5 sm:px-10'>
+                    {listingData.type === "rent" ? "For Rent" : "For Sale"}
+                  </button>
+                  <button className='font-semibold bg-green-700 text-white rounded-md py-0.5 w-fit px-5 sm:px-10'>
+                    {listingData?.offer && (
+                      <p>
+                        $
+                        {listingData.regularPrice -
+                          +listingData.discountedPrice}
+                        <span className='pl-1'>discount</span>
+                      </p>
+                    )}
+                  </button>
+                </div>
               </div>
               {/* Beds,Bath,Parking Spot,Furnished */}
               <div className='flex flex-wrap gap-2 font-semibold sm:gap-5'>
