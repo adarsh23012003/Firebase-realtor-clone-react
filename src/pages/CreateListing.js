@@ -17,7 +17,6 @@ function CreateListing() {
   const auth = getAuth();
   const navigate = useNavigate();
   const [getLocationEnable, setGetLocationEnable] = useState(true);
-  const [offer, setOffer] = useState(false);
   const [loading, setLoading] = useState(false);
   const [imagesUrls, setImagesUrls] = useState([]);
   const [formData, setFormData] = React.useState({
@@ -33,47 +32,28 @@ function CreateListing() {
     discountedPrice: 0,
     latitude: 0,
     longitude: 0,
+    offer: false,
   });
 
+  const {
+    type,
+    name,
+    bedrooms,
+    bathrooms,
+    parking,
+    furnished,
+    address,
+    description,
+    regularPrice,
+    discountedPrice,
+    latitude,
+    longitude,
+    offer,
+  } = formData;
   async function handelSubmit() {
     setLoading(true);
-    // Image uploading function
-    async function storeImage(oneImage) {
-      setLoading(true);
-      return new Promise((resolve, reject) => {
-        const storage = getStorage();
-        const filename = `${auth.currentUser.uid}-${oneImage.name}-${uuidv4()}`;
-        // Upload file and metadata to the object 'images/mountains.jpg'
-        const storageRef = ref(storage, filename);
-        const uploadTask = uploadBytesResumable(storageRef, oneImage);
-        uploadTask.on(
-          "state_changed",
-          (snapshot) => {
-            const progress =
-              (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            console.log("Upload is " + progress + "% done");
-            switch (snapshot.state) {
-              case "paused":
-                console.log("Upload is paused");
-                break;
-              case "running":
-                console.log("Upload is running");
-                break;
-            }
-          },
-          (error) => {
-            reject(error);
-          },
-          () => {
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              resolve(downloadURL);
-              // console.log("File available at", downloadURL);
-            });
-          }
-        );
-      });
-    }
-    if (!(formData.discountedPrice <= formData.regularPrice)) {
+
+    if (formData.discountedPrice >= formData.regularPrice) {
       toast.error("Discounted price needs to be less than regular price");
       setLoading(false);
       return;
@@ -90,43 +70,83 @@ function CreateListing() {
         `https://maps.googleapis.com/maps/api/geocode/json?address=${formData.address.trim()}&key=AIzaSyBdYVEZEBkDRm240spjdgBW12CyW5S1yuE`
       );
       const data = await res.json();
+      // console.log(data);
       geoLocation.lat = data.results[0]?.geometry.location.lat ?? 0;
       geoLocation.lng = data.results[0]?.geometry.location.lng ?? 0;
       location = data.status;
-      // console.log(data);
-      if (location === "OK") {
+
+      if (location === "ZERO_RESULTS") {
         setLoading(false);
-        geoLocation.lat = formData.latitude;
-        geoLocation.lng = formData.longitude;
+        toast.error("Enter a valid address or location");
+        return;
+      } else {
+        setLoading(false);
+        geoLocation.lat = latitude;
+        geoLocation.lng = longitude;
       }
-    } else if (location === "ZERO_RESULTS") {
+      // Image uploading function
+      async function storeImage(oneImage) {
+        setLoading(true);
+        return new Promise((resolve, reject) => {
+          const storage = getStorage();
+          const filename = `${auth.currentUser.uid}-${
+            oneImage.name
+          }-${uuidv4()}`;
+          // Upload file and metadata to the object 'images/mountains.jpg'
+          const storageRef = ref(storage, filename);
+          const uploadTask = uploadBytesResumable(storageRef, oneImage);
+          uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+              const progress =
+                (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+              console.log("Upload is " + progress + "% done");
+              switch (snapshot.state) {
+                case "paused":
+                  console.log("Upload is paused");
+                  break;
+                case "running":
+                  console.log("Upload is running");
+                  break;
+              }
+            },
+            (error) => {
+              reject(error);
+            },
+            () => {
+              getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                resolve(downloadURL);
+                // console.log("File available at", downloadURL);
+              });
+            }
+          );
+        });
+      }
+      const imgUrls = await Promise.all(
+        [...imagesUrls].map((image) => storeImage(image))
+      ).catch((error) => {
+        console.log(error);
+        setLoading(false);
+        toast.error("Could not upload images");
+        return;
+      });
+
+      const formDataCopy = {
+        ...formData,
+        imgUrls,
+        geoLocation,
+        timestamp: serverTimestamp(),
+        userRef: auth.currentUser.uid,
+      };
+      delete formDataCopy.images;
+      !formDataCopy.offer && delete formDataCopy.discountedPrice;
+      delete formDataCopy.latitude;
+      delete formDataCopy.longitude;
+      const docRef = await addDoc(collection(db, "listings"), formDataCopy);
+      toast.success("Listing created successfully");
       setLoading(false);
-      toast.error("Enter a valid address or location");
-      return;
+      navigate(`/category/${formDataCopy.type}/${docRef.id}`);
     }
-    const imgUrls = await Promise.all(
-      [...imagesUrls].map((image) => storeImage(image))
-    ).catch((error) => {
-      console.log(error);
-      setLoading(false);
-      toast.error("Could not upload images");
-      return;
-    });
-    const formDataCopy = {
-      ...formData,
-      imgUrls,
-      geoLocation,
-      timestamp: serverTimestamp(),
-      userRef: auth.currentUser.uid,
-    };
-    delete formDataCopy.images;
-    !formDataCopy.discountedPrice && delete formDataCopy.discountedPrice;
-    delete formDataCopy.latitude;
-    delete formDataCopy.longitude;
-    const docRef = await addDoc(collection(db, "listings"), formDataCopy);
-    toast.success("Listing created successfully");
-    setLoading(false);
-    navigate(`/category/${formDataCopy.type}/${docRef.id}`);
   }
 
   return (
@@ -152,9 +172,7 @@ function CreateListing() {
                     setFormData({ ...formData, type: "sell" });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    formData.type === "sell"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white"
+                    type === "sell" ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   Sell
@@ -166,9 +184,7 @@ function CreateListing() {
                     setFormData({ ...formData, type: "rent" });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    formData.type === "rent"
-                      ? "bg-gray-500 text-white"
-                      : "bg-white"
+                    type === "rent" ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   Rent
@@ -187,7 +203,7 @@ function CreateListing() {
                   setFormData({ ...formData, name: e.target.value });
                 }}
                 className='focus:outline-none border-2 hover:border-blue-500 rounded-sm p-1.5 w-full'
-                //   value={formData.name}
+                value={name}
                 required
                 type='text'
                 placeholder='Name'
@@ -207,7 +223,7 @@ function CreateListing() {
                       setFormData({ ...formData, bedrooms: e.target.value });
                     }}
                     required
-                    value={formData.bedrooms}
+                    value={bedrooms}
                     min='1'
                     type='number'
                     name='bedrooms'
@@ -227,7 +243,7 @@ function CreateListing() {
                     }}
                     required
                     min='1'
-                    value={formData.bathrooms}
+                    value={bathrooms}
                     type='number'
                     name='bathrooms'
                     className='focus:outline-none border-2 hover:border-blue-500 rounded-sm p-1.5 text-center w-24'
@@ -251,7 +267,7 @@ function CreateListing() {
                     });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    formData.parking ? "bg-gray-500 text-white" : "bg-white"
+                    parking ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   Yes
@@ -266,7 +282,7 @@ function CreateListing() {
                     });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    !formData.parking ? "bg-gray-500 text-white" : "bg-white"
+                    !parking ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   No
@@ -289,7 +305,7 @@ function CreateListing() {
                     });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    formData.furnished ? "bg-gray-500 text-white" : "bg-white"
+                    furnished ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   Yes
@@ -304,7 +320,7 @@ function CreateListing() {
                     });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
-                    !formData.furnished ? "bg-gray-500 text-white" : "bg-white"
+                    !furnished ? "bg-gray-500 text-white" : "bg-white"
                   }`}
                 >
                   No
@@ -319,6 +335,7 @@ function CreateListing() {
             </label>
             <div>
               <textarea
+                value={address}
                 onChange={(e) => {
                   setFormData({ ...formData, address: e.target.value });
                 }}
@@ -344,7 +361,7 @@ function CreateListing() {
                         setFormData({ ...formData, latitude: e.target.value });
                       }}
                       required
-                      value={formData.latitude}
+                      value={latitude}
                       min='-90'
                       max='90'
                       type='number'
@@ -365,7 +382,7 @@ function CreateListing() {
                       required
                       min='-180'
                       max='180'
-                      value={formData.longitude}
+                      value={longitude}
                       type='number'
                       name='longitude'
                       className='focus:outline-none border-2 hover:border-blue-500 rounded-sm p-1.5 text-center w-full'
@@ -382,6 +399,7 @@ function CreateListing() {
             </label>
             <div>
               <textarea
+                value={description}
                 onChange={(e) => {
                   setFormData({ ...formData, description: e.target.value });
                 }}
@@ -402,7 +420,10 @@ function CreateListing() {
               <div className='w-[50%] text-center'>
                 <button
                   onClick={() => {
-                    setOffer(true);
+                    setFormData({
+                      ...formData,
+                      offer: true,
+                    });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
                     offer ? "bg-gray-500 text-white" : "bg-white"
@@ -414,7 +435,10 @@ function CreateListing() {
               <div className='w-[50%] text-center'>
                 <button
                   onClick={() => {
-                    setOffer(false);
+                    setFormData({
+                      ...formData,
+                      offer: false,
+                    });
                   }}
                   className={`font-semibold uppercase shadow-sm hover:shadow-md transition-all duration-75 ease-in-out w-full rounded-sm py-2 ${
                     !offer ? "bg-gray-500 text-white" : "bg-white"
@@ -443,7 +467,7 @@ function CreateListing() {
                   required
                   type='number'
                   placeholder='Price'
-                  value={formData.regularPrice}
+                  value={regularPrice}
                   min='50'
                   max='4000000'
                 />
@@ -472,7 +496,7 @@ function CreateListing() {
                     max='4000000'
                     type='number'
                     placeholder='Price'
-                    value={formData.discountedPrice}
+                    value={discountedPrice}
                   />
                 </div>
               </div>
@@ -502,23 +526,17 @@ function CreateListing() {
           <div className='my-5'>
             <button
               onClick={(e) => {
-                e.preventDefault();
-                handelSubmit();
-                setFormData({
-                  type: "",
-                  name: "",
-                  bedrooms: 1,
-                  bathrooms: 1,
-                  parking: false,
-                  furnished: false,
-                  address: "",
-                  description: "",
-                  regularPrice: 0,
-                  discountedPrice: 0,
-                  latitude: 0,
-                  longitude: 0,
-                });
-                setImagesUrls([]);
+                if (
+                  imagesUrls.length ||
+                  name.length ||
+                  description.length ||
+                  address.length
+                ) {
+                  e.preventDefault();
+                  handelSubmit();
+                } else {
+                  toast.error("Please fill the form");
+                }
               }}
               className='uppercase w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-6 rounded-sm'
             >
