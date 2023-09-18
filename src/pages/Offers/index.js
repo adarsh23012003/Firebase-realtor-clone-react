@@ -41,7 +41,7 @@ function Offers() {
             return (
               <li
                 key={index}
-                className='bg-white rounded-md shadow-md hover:shadow-lg'
+                className='bg-white rounded-md shadow-md hover:shadow-lg mb-3 sm:mb-0'
               >
                 <div className='relative overflow-hidden rounded-t-md'>
                   <Link to={`/category/${element.data.type}/${element.id}`}>
