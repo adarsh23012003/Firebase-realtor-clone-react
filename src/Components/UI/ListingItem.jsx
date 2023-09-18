@@ -5,7 +5,7 @@ import Moment from "react-moment";
 import { Link } from "react-router-dom";
 function ListingItem({ listing, id, oneDelete, oneEdit }) {
   return (
-    <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
+    <li className='bg-white rounded-md shadow-md hover:shadow-lg mb-3 sm:mb-0'>
       <div className='relative overflow-hidden rounded-t-md'>
         <Link to={`/category/${listing.type}/${id}`}>
           <img

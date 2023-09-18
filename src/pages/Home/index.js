@@ -76,7 +76,8 @@ function Home() {
       <div>
         <Swiper
           pagination={{
-            type: "progressbar",
+            type: "bullets",
+            clickable: true,
           }}
           navigation={true}
           slidesPerView={1}
@@ -135,7 +136,7 @@ function Home() {
             <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 mb-10'>
               {listingOffers.map((element) => {
                 return (
-                  <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
+                  <li className='bg-white rounded-md shadow-md hover:shadow-lg mb-3 sm:mb-0'>
                     <div className='relative overflow-hidden rounded-t-md'>
                       <Link to={`/category/${element.data.type}/${element.id}`}>
                         <img
@@ -210,7 +211,7 @@ function Home() {
             <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 mb-10'>
               {listingForRent.map((element) => {
                 return (
-                  <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
+                  <li className='bg-white rounded-md shadow-md hover:shadow-lg mb-3 sm:mb-0'>
                     <div className='relative overflow-hidden rounded-t-md'>
                       <Link to={`/category/${element.data.type}/${element.id}`}>
                         <img
@@ -285,7 +286,7 @@ function Home() {
             <ul className='sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-3 mb-10'>
               {listingForSale.map((element) => {
                 return (
-                  <li className='bg-white rounded-md shadow-md hover:shadow-lg'>
+                  <li className='bg-white rounded-md shadow-md hover:shadow-lg mb-3 sm:mb-0'>
                     <div className='relative overflow-hidden rounded-t-md'>
                       <Link to={`/category/${element.data.type}/${element.id}`}>
                         <img
