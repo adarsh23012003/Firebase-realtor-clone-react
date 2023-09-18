@@ -29,7 +29,7 @@ function ForgotPassword() {
       <div className='flex sm:block justify-center items-center'>
         <div className='sm:flex px-2 sm:px-5 lg:px-52 gap-0 sm:gap-16 justify-center items-center'>
           <div className='max-w-sm sm:max-w-full sm:w-[50%] mb-5 sm:mb-0'>
-            <div className='flex justify-center items-center animate-pulse'>
+            <div className='flex justify-center items-center animate-[animateBounce_4s_linear_infinite]'>
               <img
                 src={require("../../assets/forgot-password.png")}
                 alt='Login'
